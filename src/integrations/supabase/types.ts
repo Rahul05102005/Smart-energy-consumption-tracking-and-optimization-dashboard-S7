@@ -14,7 +14,117 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appliances: {
+        Row: {
+          appliance_name: string
+          category: string
+          created_at: string
+          daily_usage_hours: number
+          id: string
+          power_rating: number
+          quantity: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          appliance_name: string
+          category?: string
+          created_at?: string
+          daily_usage_hours: number
+          id?: string
+          power_rating: number
+          quantity?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          appliance_name?: string
+          category?: string
+          created_at?: string
+          daily_usage_hours?: number
+          id?: string
+          power_rating?: number
+          quantity?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string
+          id: string
+          name?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      recommendations: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          priority: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          priority?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          priority?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          currency: string
+          dark_mode: boolean
+          notifications: boolean
+          tariff: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          currency?: string
+          dark_mode?: boolean
+          notifications?: boolean
+          tariff?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          currency?: string
+          dark_mode?: boolean
+          notifications?: boolean
+          tariff?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
