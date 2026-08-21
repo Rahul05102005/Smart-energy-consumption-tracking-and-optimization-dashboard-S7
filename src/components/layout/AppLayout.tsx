@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/layout/AppSidebar";
 import { useProfile } from "@/lib/queries";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { NotificationBell } from "@/components/layout/NotificationBell";
 
 function Navbar() {
   const { data: profile } = useProfile();
@@ -17,6 +18,7 @@ function Navbar() {
         <span className="text-sm font-semibold text-foreground">Smart Energy Dashboard</span>
       </div>
       <div className="flex items-center gap-2">
+        <NotificationBell />
         <span className="hidden max-w-40 truncate text-sm text-muted-foreground sm:block">{label}</span>
         <Avatar className="size-8">
           <AvatarFallback className="bg-primary/12 text-xs font-semibold text-primary">
