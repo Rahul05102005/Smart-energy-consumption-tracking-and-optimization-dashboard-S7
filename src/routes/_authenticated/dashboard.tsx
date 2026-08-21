@@ -1,7 +1,17 @@
+import { useEffect, useRef } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { FiActivity, FiAward, FiCpu, FiDollarSign, FiTrendingUp, FiZap } from "react-icons/fi";
 import { useAppliances, useProfile, useSettings } from "@/lib/queries";
-import { buildStats, byCategory, formatCurrency, formatKwh, monthlyTrend, summarize } from "@/lib/energy";
+import {
+  buildStats,
+  byCategory,
+  formatCurrency,
+  formatKwh,
+  generateRecommendations,
+  monthlyTrend,
+  summarize,
+} from "@/lib/energy";
 import { StatCard, PanelCard } from "@/components/common/Cards";
 import { Loader, EmptyState } from "@/components/common/Loader";
 import {
