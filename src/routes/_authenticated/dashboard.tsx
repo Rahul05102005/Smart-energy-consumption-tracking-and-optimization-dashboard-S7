@@ -1,7 +1,17 @@
+import { useEffect, useRef } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { FiActivity, FiAward, FiCpu, FiDollarSign, FiTrendingUp, FiZap } from "react-icons/fi";
 import { useAppliances, useProfile, useSettings } from "@/lib/queries";
-import { buildStats, byCategory, formatCurrency, formatKwh, monthlyTrend, summarize } from "@/lib/energy";
+import {
+  buildStats,
+  byCategory,
+  formatCurrency,
+  formatKwh,
+  generateRecommendations,
+  monthlyTrend,
+  summarize,
+} from "@/lib/energy";
 import { StatCard, PanelCard } from "@/components/common/Cards";
 import { Loader, EmptyState } from "@/components/common/Loader";
 import {
@@ -30,6 +40,23 @@ function DashboardPage() {
   const { data: appliances, isLoading } = useAppliances();
   const { data: settings } = useSettings();
   const { data: profile } = useProfile();
+  const alerted = useRef<string | null>(null);
+
+  // Pop-up alert: which appliance is consuming the most + how to cut it down.
+  useEffect(() => {
+    if (!settings || !settings.notifications || !appliances?.length) return;
+    const alertStats = buildStats(appliances, settings.tariff);
+    const top = [...alertStats].sort((a, b) => b.monthlyConsumption - a.monthlyConsumption)[0];
+    if (!top || alerted.current === top.id) return;
+    alerted.current = top.id;
+    const tip =
+      generateRecommendations(alertStats, settings.tariff, settings.currency).find((t) => t.priority === "high")
+        ?.message ?? "Reduce its daily runtime or shift it to off-peak hours to cut consumption.";
+    toast.warning(`High usage: ${top.appliance_name}`, {
+      description: `${formatKwh(top.monthlyConsumption)}/month (${top.sharePercent.toFixed(0)}% of your load). ${tip}`,
+      duration: 10000,
+    });
+  }, [appliances, settings]);
 
   if (isLoading || !settings) return <Loader label="Loading your dashboard…" />;
 
