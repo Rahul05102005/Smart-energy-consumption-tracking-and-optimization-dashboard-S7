@@ -1,7 +1,10 @@
+import { useEffect, useRef } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { FiZap } from "react-icons/fi";
 import { useAppliances, useSettings } from "@/lib/queries";
-import { buildStats, generateRecommendations } from "@/lib/energy";
+import { buildStats, formatKwh, generateRecommendations } from "@/lib/energy";
+import { addNotification } from "@/lib/notifications";
 import { PanelCard } from "@/components/common/Cards";
 import { Loader } from "@/components/common/Loader";
 import { Badge } from "@/components/ui/badge";
@@ -23,11 +26,29 @@ const tone = { high: "destructive", medium: "default", low: "secondary" } as con
 function RecommendationsPage() {
   const { data: appliances, isLoading } = useAppliances();
   const { data: settings } = useSettings();
+  const alerted = useRef(false);
+
+  // High-usage pop-up: shown only on this page, for 3 seconds, and saved to history.
+  useEffect(() => {
+    if (alerted.current || !settings || !settings.notifications || !appliances?.length) return;
+    const alertStats = buildStats(appliances, settings.tariff);
+    const top = [...alertStats].sort((a, b) => b.monthlyConsumption - a.monthlyConsumption)[0];
+    if (!top) return;
+    alerted.current = true;
+    const tip =
+      generateRecommendations(alertStats, settings.tariff, settings.currency).find((t) => t.priority === "high")
+        ?.message ?? "Reduce its daily runtime or shift it to off-peak hours to cut consumption.";
+    const title = `High usage: ${top.appliance_name}`;
+    const description = `${formatKwh(top.monthlyConsumption)}/month (${top.sharePercent.toFixed(0)}% of your load). ${tip}`;
+    toast.warning(title, { description, duration: 3000, closeButton: true });
+    addNotification(title, description);
+  }, [appliances, settings]);
 
   if (isLoading || !settings) return <Loader label="Analysing your usage…" />;
 
   const stats = buildStats(appliances ?? [], settings.tariff);
   const tips = generateRecommendations(stats, settings.tariff, settings.currency);
+
 
   return (
     <div className="mx-auto max-w-4xl space-y-5">
